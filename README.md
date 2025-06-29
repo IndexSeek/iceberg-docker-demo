@@ -8,7 +8,7 @@ Docker-based local development setup for Apache Iceberg with PostgreSQL catalog 
 just setup
 ```
 
-This will install Python dependencies and start all Docker services.
+This will install Python dependencies, start all Docker services, and automatically initialize the Iceberg catalog with demo tables.
 
 ## Commands
 
@@ -24,16 +24,39 @@ just tail [service]     # View service logs
 
 ## Usage
 
-Once services are running, you can interact with the Iceberg setup:
+Once services are running, the Iceberg catalog and tables are automatically initialized. You can verify the setup by checking the service logs:
 
 ```bash
-python main.py
+just tail catalog-init
 ```
 
 ## Services
 
 - **PostgreSQL** (port 5432): Iceberg catalog metadata
 - **LocalStack** (port 4566): S3-compatible storage
+- **catalog-init**: Initializes Iceberg catalog and demo table
+- **localstack-init**: Creates S3 warehouse bucket
+
+## Environment Variables
+
+The setup supports customization via environment variables:
+
+### Database Configuration
+- `POSTGRES_USER` (default: postgres)
+- `POSTGRES_PASSWORD` (default: postgres)
+- `POSTGRES_DB` (default: iceberg_catalog)
+
+### S3/Object Storage Configuration
+- `S3_ENDPOINT` (default: http://localstack:4566)
+- `S3_ACCESS_KEY_ID` (default: test)
+- `S3_SECRET_ACCESS_KEY` (default: test)
+- `WAREHOUSE_PATH` (default: s3://warehouse/)
+
+### AWS CLI Configuration
+- `AWS_ACCESS_KEY_ID` (default: test)
+- `AWS_SECRET_ACCESS_KEY` (default: test)
+- `AWS_DEFAULT_REGION` (default: us-east-1)
+- `AWS_ENDPOINT_URL` (default: http://localstack:4566)
 
 ## Requirements
 
