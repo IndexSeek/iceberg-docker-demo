@@ -2,10 +2,10 @@
 
 from pyiceberg.catalog import load_catalog
 from pyiceberg.exceptions import (
-    UnauthorizedError,
     ForbiddenError,
-    ServerError,
     NotInstalledError,
+    ServerError,
+    UnauthorizedError,
 )
 
 try:

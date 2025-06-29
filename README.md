@@ -1,6 +1,7 @@
 # Iceberg Docker Demo
 
-Docker-based local development setup for Apache Iceberg with PostgreSQL catalog and S3 warehouse.
+Docker-based local development setup for Apache Iceberg with PostgreSQL catalog, S3
+warehouse, and interactive Marimo notebooks for data analysis.
 
 ## Setup
 
@@ -8,7 +9,8 @@ Docker-based local development setup for Apache Iceberg with PostgreSQL catalog 
 just setup
 ```
 
-This will install Python dependencies, start all Docker services, and automatically initialize the Iceberg catalog.
+This will install Python dependencies, start all Docker services, initialize the
+Iceberg catalog, load sample NYC taxi data, and start the Marimo notebook server.
 
 ## Commands
 
@@ -24,18 +26,39 @@ just tail [service]     # View service logs
 
 ## Usage
 
-Once services are running, the Iceberg catalog with default namespace is automatically initialized. You can verify the setup by checking the service logs:
+Once services are running:
+
+1. **Iceberg catalog** with default namespace is automatically initialized
+2. **Sample NYC taxi data** is loaded into the `nyc.fhvhv` table
+3. **Marimo notebook server** is available at http://localhost:2718
+
+You can verify the setup by checking the service logs:
 
 ```bash
-just tail catalog-init
+just tail catalog-init   # Check catalog initialization
+just tail marimo        # Check notebook server status
 ```
 
 ## Services
 
 - **PostgreSQL** (port 5432): Iceberg catalog metadata
-- **LocalStack** (port 4566): S3-compatible storage
-- **catalog-init**: Initializes Iceberg catalog with default namespace
-- **localstack-init**: Creates S3 warehouse bucket
+- **LocalStack** (port 4566): S3-compatible storage for data warehouse
+- **Marimo** (port 2718): Interactive notebook server for data analysis
+- **catalog-init**: Initializes Iceberg catalog with PyIceberg environment variables
+- **localstack-init**: Creates S3 warehouse bucket and uploads sample data
+
+## Data Analysis
+
+The setup includes a Marimo notebook (`notebooks/reading.py`) that demonstrates:
+- Connecting to the Iceberg catalog using PyIceberg's `load_catalog()`
+- Listing namespaces and tables
+- Querying and displaying NYC taxi data
+- Interactive data exploration
+
+The project uses PyIceberg's recommended environment variable configuration with
+`PYICEBERG_CATALOG__DEFAULT__*` variables for catalog settings.
+
+Access the notebook interface at http://localhost:2718 after running `just setup`.
 
 ## Environment Variables
 
@@ -62,8 +85,15 @@ The setup supports customization via environment variables:
 
 - Docker & Docker Compose
 - Python 3.10+
-- [uv](https://github.com/astral-sh/uv)
-- [just](https://github.com/casey/just)
+- [uv](https://github.com/astral-sh/uv) for dependency management
+- [just](https://github.com/casey/just) for task running
+
+## Sample Data
+
+The setup includes NYC For-Hire Vehicle (FHV) trip data from the TLC Trip Record Data. The data is automatically:
+1. Uploaded to LocalStack S3 (`s3://nyc-taxi/`)
+2. Loaded into an Iceberg table (`nyc.fhvhv`)
+3. Made available for analysis in Marimo notebooks
 
 ## Trademarks
 

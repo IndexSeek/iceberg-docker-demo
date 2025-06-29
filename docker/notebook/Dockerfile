@@ -12,9 +12,19 @@ COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-install-project --no-dev
 
-COPY docker/catalog/init-catalog.py /init-catalog.py
+COPY docker/notebook/load-fhvhv.py /load-fhvhv.py
+
+# Copy notebooks folder and entrypoint script
+COPY notebooks/ ./notebooks/
+COPY docker/notebook/entrypoint.sh /entrypoint.sh
 
 # Set PATH to include the virtual environment
 ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["uv", "run", "python3", "/init-catalog.py"]
+RUN chmod +x /entrypoint.sh
+
+WORKDIR /app/notebooks
+
+EXPOSE 2718
+
+ENTRYPOINT ["/entrypoint.sh"]
