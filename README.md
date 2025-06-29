@@ -8,26 +8,26 @@ Docker-based local development setup for Apache Iceberg with PostgreSQL catalog 
 just setup
 ```
 
-## Usage
-
-```bash
-# Launch notebook
-just notebook
-
-# Run demo
-python main.py
-```
+This will install Python dependencies and start all Docker services.
 
 ## Commands
 
 ```bash
-just sync               # Install dependencies
-just up [service]       # Start services
-just down [service]     # Stop services
+just sync               # Install Python dependencies
+just up [service]       # Start Docker services (all or specific)
+just down [service]     # Stop Docker services (all or specific)
 just create-catalog     # Initialize PostgreSQL catalog
 just create-warehouse   # Initialize S3 warehouse
 just clean              # Clean up Docker resources
-just tail [service]     # View logs
+just tail [service]     # View service logs
+```
+
+## Usage
+
+Once services are running, you can interact with the Iceberg setup:
+
+```bash
+python main.py
 ```
 
 ## Services
