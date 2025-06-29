@@ -8,7 +8,7 @@ Docker-based local development setup for Apache Iceberg with PostgreSQL catalog 
 just setup
 ```
 
-This will install Python dependencies, start all Docker services, and automatically initialize the Iceberg catalog with demo tables.
+This will install Python dependencies, start all Docker services, and automatically initialize the Iceberg catalog.
 
 ## Commands
 
@@ -24,7 +24,7 @@ just tail [service]     # View service logs
 
 ## Usage
 
-Once services are running, the Iceberg catalog and tables are automatically initialized. You can verify the setup by checking the service logs:
+Once services are running, the Iceberg catalog with default namespace is automatically initialized. You can verify the setup by checking the service logs:
 
 ```bash
 just tail catalog-init
@@ -34,7 +34,7 @@ just tail catalog-init
 
 - **PostgreSQL** (port 5432): Iceberg catalog metadata
 - **LocalStack** (port 4566): S3-compatible storage
-- **catalog-init**: Initializes Iceberg catalog and demo table
+- **catalog-init**: Initializes Iceberg catalog with default namespace
 - **localstack-init**: Creates S3 warehouse bucket
 
 ## Environment Variables
