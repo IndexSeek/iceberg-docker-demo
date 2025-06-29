@@ -44,8 +44,10 @@ def main():
         print(f"Error listing namespaces: {e}")
 
     catalog.create_namespace_if_not_exists("default")
-    t = pa.table(dict(id=[1,2,3], programming_language=["Python", "Rust", "Go"]))
-    prog_lang_table = catalog.create_table_if_not_exists("default.programming_language", schema=t.schema)
+    t = pa.table(dict(id=[1, 2, 3], programming_language=["Python", "Rust", "Go"]))
+    prog_lang_table = catalog.create_table_if_not_exists(
+        "default.programming_language", schema=t.schema
+    )
     print(f"Table created: {prog_lang_table.name}")
     prog_lang_table.append(t)
     print("Data appended to table.")
