@@ -17,5 +17,3 @@ for file in /data/*.parquet; do
 done
 
 echo "Data upload to s3://nyc-taxi/ completed!"
-
-python3 /app/load-fhvhv.py

@@ -12,7 +12,6 @@ COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-install-project --no-dev
 
-COPY docker/notebook/load-fhvhv.py /load-fhvhv.py
 
 # Copy notebooks folder and entrypoint script
 COPY notebooks/ ./notebooks/
