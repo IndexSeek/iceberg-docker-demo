@@ -7,10 +7,6 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     from pyiceberg.catalog import load_catalog
-    import pyarrow as pa
-    import pyarrow.dataset as ds
-    import pyarrow.fs as fs
-
 
     catalog = load_catalog("default")
     return (catalog,)
