@@ -1,7 +1,6 @@
 # Iceberg Docker Demo
 
-Docker-based local development setup for Apache Iceberg with PostgreSQL catalog, S3
-warehouse, and interactive Marimo notebooks for data analysis.
+Docker-based local development setup for Apache Iceberg with PostgreSQL catalog, S3-compatible object storage, and interactive Marimo notebooks for data analysis.
 
 ## Setup
 
@@ -19,7 +18,7 @@ just sync               # Install Python dependencies
 just up [service]       # Start Docker services (all or specific)
 just down [service]     # Stop Docker services (all or specific)
 just create-catalog     # Initialize PostgreSQL catalog
-just create-warehouse   # Initialize S3 warehouse
+just create-warehouse   # Initialize warehouse storage bucket
 just clean              # Clean up Docker resources
 just tail [service]     # View service logs
 ```
@@ -42,10 +41,10 @@ just tail marimo        # Check notebook server status
 ## Services
 
 - **PostgreSQL** (port 5432): Iceberg catalog metadata
-- **LocalStack** (port 4566): S3-compatible storage for data warehouse
+- **LocalStack** (port 4566): S3-compatible object storage backend
 - **Marimo** (port 2718): Interactive notebook server for data analysis
 - **catalog-init**: Initializes Iceberg catalog with PyIceberg environment variables
-- **localstack-init**: Creates S3 warehouse bucket and uploads sample data
+- **localstack-init**: Creates S3 storage bucket and uploads sample data
 
 ## Data Analysis
 
