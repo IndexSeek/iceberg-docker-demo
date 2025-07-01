@@ -39,17 +39,17 @@ create-catalog:
     docker-compose up catalog-init
     echo "Catalog service ready!"
 
-# start warehouse service (LocalStack) and initialize S3 bucket
+# start warehouse service (Minio) and initialize S3 bucket
 create-warehouse:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    echo "Starting LocalStack warehouse service..."
-    docker-compose up -d localstack
-    echo "Waiting for LocalStack to be healthy..."
-    timeout 60 bash -c 'until docker-compose ps localstack | grep -q "healthy"; do sleep 2; done' || echo "LocalStack may still be starting up"
+    echo "Starting Minio warehouse service..."
+    docker-compose up -d minio
+    echo "Waiting for Minio to be healthy..."
+    timeout 60 bash -c 'until docker-compose ps minio | grep -q "healthy"; do sleep 2; done' || echo "Minio may still be starting up"
     echo "Initializing warehouse bucket..."
-    docker-compose up localstack-init
+    docker-compose up minio-init
     echo "Warehouse service ready!"
 
 # stop and remove containers; clean up networks and volumes

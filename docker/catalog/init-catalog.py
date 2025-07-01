@@ -42,6 +42,7 @@ try:
             endpoint_override=os.environ.get("S3_ENDPOINT"),
             region="us-east-1",
             scheme="http",
+            force_virtual_addressing=False,
         )
 
         dataset = ds.dataset("nyc-taxi/", filesystem=s3, format="parquet")

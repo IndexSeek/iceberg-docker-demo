@@ -18,36 +18,37 @@
 #
 
 services:
-  localstack:
-    container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
-    image: localstack/localstack
+  minio:
+    image: minio/minio:latest
     ports:
-      - "127.0.0.1:4566:4566"
+      - "9000:9000"
+      - "9001:9001"
     environment:
-      - DEBUG=${DEBUG:-0}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin123}
     volumes:
-      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - minio_data:/data
+    command: server /data --console-address ":9001"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      test: ["CMD", "mc", "ready", "local"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 10s
-  localstack-init:
-    image: amazon/aws-cli:latest
+  minio-init:
+    image: minio/mc:latest
     depends_on:
-      localstack:
+      minio:
         condition: service_healthy
     volumes:
       - "./data:/data:ro"
-      - "./docker/warehouse/init-localstack.sh:/init-localstack.sh:ro"
+      - "./docker/warehouse/init-minio.sh:/init-minio.sh:ro"
     environment:
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-test}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-test}
-      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
-      - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL:-http://localstack:4566}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin123}
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT:-http://minio:9000}
     restart: "no"
-    entrypoint: ["sh", "/init-localstack.sh"]
+    entrypoint: ["sh", "/init-minio.sh"]
   postgres:
     image: postgres:17.5
     ports:
@@ -78,9 +79,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      localstack:
+      minio:
         condition: service_healthy
-      localstack-init:
+      minio-init:
         condition: service_completed_successfully
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
@@ -88,16 +89,20 @@ services:
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_DB=${POSTGRES_DB:-iceberg_catalog}
-      - S3_ENDPOINT=${S3_ENDPOINT:-http://localstack:4566}
-      - S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-test}
-      - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-test}
+      - S3_ENDPOINT=${S3_ENDPOINT:-http://minio:9000}
+      - S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-minioadmin}
+      - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-minioadmin123}
+      - AWS_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-minioadmin}
+      - AWS_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-minioadmin123}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+      - AWS_ENDPOINT_URL=${S3_ENDPOINT:-http://minio:9000}
       - WAREHOUSE_PATH=${WAREHOUSE_PATH:-s3://warehouse/}
       - PYICEBERG_CATALOG__DEFAULT__TYPE=sql
       - PYICEBERG_CATALOG__DEFAULT__URI=postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-iceberg_catalog}
       - PYICEBERG_CATALOG__DEFAULT__WAREHOUSE=${WAREHOUSE_PATH:-s3://warehouse/}
-      - PYICEBERG_CATALOG__DEFAULT__S3__ENDPOINT=${S3_ENDPOINT:-http://localstack:4566}
-      - PYICEBERG_CATALOG__DEFAULT__S3__ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-test}
-      - PYICEBERG_CATALOG__DEFAULT__S3__SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-test}
+      - PYICEBERG_CATALOG__DEFAULT__S3__ENDPOINT=${S3_ENDPOINT:-http://minio:9000}
+      - PYICEBERG_CATALOG__DEFAULT__S3__ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-minioadmin}
+      - PYICEBERG_CATALOG__DEFAULT__S3__SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-minioadmin123}
       - PYICEBERG_CATALOG__DEFAULT__S3__PATH_STYLE_ACCESS=true
     restart: "no"
   marimo:
@@ -109,7 +114,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      localstack:
+      minio:
         condition: service_healthy
       catalog-init:
         condition: service_completed_successfully
@@ -119,16 +124,23 @@ services:
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_DB=${POSTGRES_DB:-iceberg_catalog}
-      - S3_ENDPOINT=${S3_ENDPOINT:-http://localstack:4566}
-      - S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-test}
-      - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-test}
+      - S3_ENDPOINT=${S3_ENDPOINT:-http://minio:9000}
+      - S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-minioadmin}
+      - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-minioadmin123}
+      - AWS_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-minioadmin}
+      - AWS_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-minioadmin123}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+      - AWS_ENDPOINT_URL=${S3_ENDPOINT:-http://minio:9000}
       - WAREHOUSE_PATH=${WAREHOUSE_PATH:-s3://warehouse/}
       - PYICEBERG_CATALOG__DEFAULT__TYPE=sql
       - PYICEBERG_CATALOG__DEFAULT__URI=postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-iceberg_catalog}
       - PYICEBERG_CATALOG__DEFAULT__WAREHOUSE=${WAREHOUSE_PATH:-s3://warehouse/}
-      - PYICEBERG_CATALOG__DEFAULT__S3__ENDPOINT=${S3_ENDPOINT:-http://localstack:4566}
-      - PYICEBERG_CATALOG__DEFAULT__S3__ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-test}
-      - PYICEBERG_CATALOG__DEFAULT__S3__SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-test}
+      - PYICEBERG_CATALOG__DEFAULT__S3__ENDPOINT=${S3_ENDPOINT:-http://minio:9000}
+      - PYICEBERG_CATALOG__DEFAULT__S3__ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-minioadmin}
+      - PYICEBERG_CATALOG__DEFAULT__S3__SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-minioadmin123}
       - PYICEBERG_CATALOG__DEFAULT__S3__PATH_STYLE_ACCESS=true
     volumes:
       - "./notebooks:/notebooks"
+
+volumes:
+  minio_data:
