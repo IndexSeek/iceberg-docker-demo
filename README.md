@@ -41,10 +41,10 @@ just tail marimo        # Check notebook server status
 ## Services
 
 - **PostgreSQL** (port 5432): Iceberg catalog metadata
-- **LocalStack** (port 4566): S3-compatible object storage backend
+- **Minio** (ports 9000/9001): S3-compatible object storage backend
 - **Marimo** (port 2718): Interactive notebook server for data analysis
 - **catalog-init**: Initializes Iceberg catalog with PyIceberg environment variables
-- **localstack-init**: Creates S3 storage bucket and uploads sample data
+- **minio-init**: Creates S3 storage bucket and uploads sample data
 
 ## Data Analysis
 
@@ -69,7 +69,7 @@ The setup supports customization via environment variables:
 - `POSTGRES_DB` (default: iceberg_catalog)
 
 ### S3/Object Storage Configuration
-- `S3_ENDPOINT` (default: http://localstack:4566)
+- `S3_ENDPOINT` (default: http://minio:9000)
 - `S3_ACCESS_KEY_ID` (default: test)
 - `S3_SECRET_ACCESS_KEY` (default: test)
 - `WAREHOUSE_PATH` (default: s3://warehouse/)
@@ -78,7 +78,7 @@ The setup supports customization via environment variables:
 - `AWS_ACCESS_KEY_ID` (default: test)
 - `AWS_SECRET_ACCESS_KEY` (default: test)
 - `AWS_DEFAULT_REGION` (default: us-east-1)
-- `AWS_ENDPOINT_URL` (default: http://localstack:4566)
+- `AWS_ENDPOINT_URL` (default: http://minio:9000)
 
 ## Requirements
 
@@ -90,7 +90,7 @@ The setup supports customization via environment variables:
 ## Sample Data
 
 The setup includes NYC For-Hire Vehicle (FHV) trip data from the TLC Trip Record Data. The data is automatically:
-1. Uploaded to LocalStack S3 (`s3://nyc-taxi/`)
+1. Uploaded to Minio S3 (`s3://nyc-taxi/`)
 2. Loaded into an Iceberg table (`nyc.fhvhv`)
 3. Made available for analysis in Marimo notebooks
 
