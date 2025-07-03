@@ -51,7 +51,8 @@ just tail marimo        # Check notebook server status
 The setup includes a Marimo notebook (`notebooks/reading.py`) that demonstrates:
 - Connecting to the Iceberg catalog using PyIceberg's `load_catalog()`
 - Listing namespaces and tables
-- Querying and displaying NYC taxi data
+- Querying and displaying NYC taxi data with PyIceberg
+- Iceberg table access using DuckDB with S3 integration
 - Interactive data exploration
 
 The project uses PyIceberg's recommended environment variable configuration with
@@ -86,6 +87,8 @@ The setup supports customization via environment variables:
 - Python 3.10+
 - [uv](https://github.com/astral-sh/uv) for dependency management
 - [just](https://github.com/casey/just) for task running
+
+Key dependencies include PyIceberg, Marimo, DuckDB, and PyArrow.
 
 ## Sample Data
 
